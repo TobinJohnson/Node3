@@ -1,0 +1,24 @@
+
+{
+    "extends": ["eslint:recommended", "plugin:prettier/recommended", "wesbos"],
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": ["error", { "singleQuote": true, "semi": false,
+      "tab": false}],
+    //   "no-console": 2,
+      "no-unused-vars": "off",
+      "no-undef": "warn",
+      "no-empty": "warn",
+      "no-empty-function": "warn",
+      "space-infix-ops" : "off",
+      "space-before-blocks" : "off",
+      "eslint-plugin-vue/no-console" : "off",
+      "eslint-plugin-vue/no-unused-vars" : "off",
+      "prefer-template" : "off",
+      "eslint-plugin-unicorn/no-process-exit" : "off",
+      "no-mixed-spaces-and-tabs" : "off",
+      "eslint-plugin-unicorn/no-abusive-eslint-disable" : "off"
+      
+    }
+  }
+  
