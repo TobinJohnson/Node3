@@ -17,7 +17,10 @@
       "prefer-template" : "off",
       "eslint-plugin-unicorn/no-process-exit" : "off",
       "no-mixed-spaces-and-tabs" : "off",
-      "eslint-plugin-unicorn/no-abusive-eslint-disable" : "off"
+      "eslint-plugin-unicorn/no-abusive-eslint-disable" : "off",
+      "eslint-plugin-import/no-extraneous-dependencies" : "off"
+     
+
       
     }
   }

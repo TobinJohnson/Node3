@@ -1,10 +1,13 @@
 const fs = require('fs')
 const path = require('path')
+const { log } = require('console')
 const {
   generateAccessToken,
   generateRefreshToken,
   authenticateUser,
   verifyRefreshToken,
+  generateUniqueId,
+  // generateUniqueId,
 } = require('../services/CommonService')
 
 const users = JSON.parse(
@@ -48,7 +51,38 @@ exports.home = async (req, res) => {
 
 exports.viewUsers = async (req, res) => {
   try {
+    console.log('Hello')
     res.status(200).send(users)
+  } catch (error) {
+    res.status(500).send(error)
+  }
+}
+
+exports.addUser = (req, res) => {
+  try {
+    const { name, number, role, email, password } = req.body
+    if (!name || !number || !role || !email || !password)
+      return res.status(400).send('Please fill all the fields')
+    const user = {
+      // id: users.length + 1,
+      id: generateUniqueId(),
+      name,
+      number,
+      role,
+      email,
+      password,
+    }
+    users.push(user)
+    fs.writeFileSync(
+      path.join(__dirname, '../data/userData.json'),
+      JSON.stringify(users, null, 2),
+    )
+    res
+      .status(201)
+      .send(
+        'User added successfully and the new UserDetails is ' +
+          JSON.stringify(user),
+      )
   } catch (error) {
     res.status(500).send(error)
   }
@@ -57,24 +91,71 @@ exports.viewUsers = async (req, res) => {
 exports.editUsers = async (req, res) => {
   try {
     const userId = req.params.id
-    const userIndex = users.findIndex(user => user.id === userId)
-    if (userIndex==-1) return res.status(404).send('Invalid user')
-    if(req.body.name)
-    users[userIndex].name=req.body.name
-    if(req.body.number)
-    users[userIndex].name=req.body.number
-    if(req.body.role)
-    users[userIndex].name=req.body.role
-    if(req.body.email)
-    users[userIndex].name=req.body.email
-    if(req.body.password)
-    users[userIndex].name=req.body.password
-    
-    fs.writeFileSync('userData.json',JSON.stringify(users,null,2))
-    const userDetails=users[userIndex]
-    res.status(200).send("User data successfully updated"+userDetails.name +userDetails.email)
+    const userIndex = users.findIndex((user) => user.id === userId)
+    if (userIndex === -1) return res.status(404).send('Invalid user')
+    if (req.body.name) users[userIndex].name = req.body.name
+    if (req.body.number) users[userIndex].name = req.body.number
+    if (req.body.role) users[userIndex].name = req.body.role
+    if (req.body.email) users[userIndex].name = req.body.email
+    if (req.body.password) users[userIndex].name = req.body.password
+
+    fs.writeFileSync(
+      path.join(__dirname, '../data/userData.json'),
+      JSON.stringify(users, null, 2),
+    )
+
+    res
+      .status(200)
+      .send('User data successfully updated ' + JSON.stringify(users))
   } catch (error) {
     res.status(500).send(error)
-    
+  }
+}
+
+exports.changePassword = async (req, res) => {
+  const userId = req.params.id
+  try {
+    const userIndex = users.findIndex((user) => user.id === userId)
+    if (userIndex === -1) return res.status(404).send('Invalid user')
+    if (req.body.password) users[userIndex].password = req.body.password
+    fs.writeFileSync(
+      path.join(__dirname, '../data/userData.json'),
+      JSON.stringify(users, null, 2),
+    )
+    res
+      .status(200)
+      .send('User data successfully updated ' + JSON.stringify(users))
+  } catch (error) {
+    res.status(500).send(error)
+  }
+}
+
+exports.userDelete = async (req, res) => {
+  const userId = req.params.id
+  try {
+    const userIndex = users.findIndex((user) => user.id === userId)
+    if (userIndex === -1) return res.status(404).send('Invalid user')
+    users.splice(userIndex, 1)
+    fs.writeFileSync(
+      path.join(__dirname, '../data/userData.json'),
+      JSON.stringify(users, null, 2),
+    )
+    res
+      .status(200)
+      .send(
+        'User successfully deleted and the updated users list is ' +
+          JSON.stringify(users),
+      )
+  } catch (error) {
+    res.status(500).send(error)
+  }
+}
+
+exports.PhotoUpload = async (req, res) => {
+  try {
+    if (!req.file) res.status(400).send('Photo not uploaded')
+    res.status(200).send('You have successfully uploaded')
+  } catch {
+    res.status(500).send('Something went wrong')
   }
 }

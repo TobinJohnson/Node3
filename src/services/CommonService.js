@@ -41,3 +41,8 @@ exports.authenticateUser = (email, password) => {
   )
   return user
 }
+
+exports.generateUniqueId = () => {
+  const unique = Date.now().toString()
+  return unique
+}
