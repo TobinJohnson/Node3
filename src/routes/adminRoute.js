@@ -8,5 +8,6 @@ router.post('/login', adminController.login)
 router.get('/home', adminController.home)
 router.get('/home/viewUsers', adminController.viewUsers)
 router.post('/refreshtoken', adminController.refresherToken)
+router.put('/user/:id', adminController.editUsers)
 
 module.exports = router

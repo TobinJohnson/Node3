@@ -1,0 +1,82 @@
+[
+  {
+    "id": "12121212",
+    "name": "Tobin",
+    "number": "1234567890",
+    "role": "admin",
+    "email": "john@gmail.com",
+    "password": "password123"
+  },
+  {
+    "id": "12121213",
+    "name": "Smith",
+    "number": "9876543210",
+    "role": "admin",
+    "email": "smith@gmail.com",
+    "password": "password456"
+  },
+  {
+    "id": "12121214",
+    "name": "Michael",
+    "number": "5555555555",
+    "role": "qc",
+    "email": "michael@gmail.com",
+    "password": "password789"
+  },
+  {
+    "id": "12121215",
+    "name": "Emil",
+    "number": "7777777777",
+    "role": "supervisor",
+    "email": "emil@gmail.com",
+    "password": "passwordabc"
+  },
+  {
+    "id": "12121216",
+    "name": "David",
+    "number": "8888888888",
+    "role": "agent",
+    "email": "david@gmail.com",
+    "password": "passworddef"
+  },
+  {
+    "id": "12121217",
+    "name": "Sarah",
+    "number": "9999999999",
+    "role": "admin",
+    "email": "sarah@gmail.com",
+    "password": "passwordghi"
+  },
+  {
+    "id": "12121218",
+    "name": "Alex",
+    "number": "6666666666",
+    "role": "qa",
+    "email": "alex@gmail.com",
+    "password": "passwordjkl"
+  },
+  {
+    "id": "12121219",
+    "name": "Shyam",
+    "number": "4444444444",
+    "role": "qc",
+    "email": "shyam@gmail.com",
+    "password": "passwordmno"
+  },
+  {
+    "id": "12121220",
+    "name": "Karthik",
+    "number": "2222222222",
+    "role": "supervisor",
+    "email": "karthik@gmail.com",
+    "password": "passwordpqr"
+  },
+  {
+    "id": "12121221",
+    "name": "Godwin",
+    "number": "1111111111",
+    "role": "agent",
+    "email": "godwin@gmail.com",
+    "password": "passwordstu"
+  }
+]

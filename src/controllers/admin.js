@@ -12,7 +12,7 @@ const users = JSON.parse(
 )
 
 exports.loginGet = async (req, res) => {
-  res.status(200).send(`You are now Login page , now you can login`)
+  res.status(200).send(`You are now Admin Login page , now you can login`)
 }
 
 exports.login = async (req, res) => {
@@ -51,5 +51,30 @@ exports.viewUsers = async (req, res) => {
     res.status(200).send(users)
   } catch (error) {
     res.status(500).send(error)
+  }
+}
+
+exports.editUsers = async (req, res) => {
+  try {
+    const userId = req.params.id
+    const userIndex = users.findIndex(user => user.id === userId)
+    if (userIndex==-1) return res.status(404).send('Invalid user')
+    if(req.body.name)
+    users[userIndex].name=req.body.name
+    if(req.body.number)
+    users[userIndex].name=req.body.number
+    if(req.body.role)
+    users[userIndex].name=req.body.role
+    if(req.body.email)
+    users[userIndex].name=req.body.email
+    if(req.body.password)
+    users[userIndex].name=req.body.password
+    
+    fs.writeFileSync('userData.json',JSON.stringify(users,null,2))
+    const userDetails=users[userIndex]
+    res.status(200).send("User data successfully updated"+userDetails.name +userDetails.email)
+  } catch (error) {
+    res.status(500).send(error)
+    
   }
 }
