@@ -1,9 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const express = require('express')
+const app=express()
 
 const multer = require('multer')
 
 const router = express.Router()
+
 const adminController = require('../controllers/admin')
 
 const storage = multer.diskStorage({

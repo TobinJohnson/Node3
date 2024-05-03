@@ -1,0 +1,11 @@
+##User Login Page Get
+GET http://localhost:3000/user/login
+
+POST  http://localhost:3000/admin/login
+Content-Type: application/json
+
+{
+    "email":"sarah@gmail.com",
+    "password":"passwordghi",
+}
+

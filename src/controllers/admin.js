@@ -1,6 +1,8 @@
 const fs = require('fs')
 const path = require('path')
-const { log } = require('console')
+const { log, error } = require('console')
+const express=require('express')
+const app=express()
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -9,6 +11,10 @@ const {
   generateUniqueId,
   // generateUniqueId,
 } = require('../services/CommonService')
+const {loginCheckSchema}=require("../helpers/validation-schema")
+const Joi = require('@hapi/joi')
+app.use(express.json)
+app.use(express.urlencoded({extended:true}))
 
 const users = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../data/userData.json')),
@@ -18,21 +24,28 @@ exports.loginGet = async (req, res) => {
   res.status(200).send(`You are now Admin Login page , now you can login`)
 }
 
-exports.login = async (req, res) => {
+exports.login = (req, res) => {
   try {
+    console.log(req.body)
     const { email, password } = req.body
-    const user = authenticateUser(email, password)
-    if (!user) return res.status(401).send('Invalid email or password')
 
-    if (user.role !== 'admin') return res.status(403).send('Unauthorized User')
-    const accessToken = generateAccessToken(user.id)
-    console.log(accessToken + ' created')
+    // const user = authenticateUser(email, password)
+    // const user = await loginCheckSchema.validateAsync(req.body)
+    // if (!user) return res.status(401).send('Invalid email or password')
+
+    // if (user.role !== 'admin') return res.status(403).send('Unauthorized User')
+    // const accessToken = generateAccessToken(user.id)
+    // console.log(accessToken + ' created')
     //    const refresherToken=generateRefreshToken(user.id)
     console.log('Hello')
     // res.json({accessToken,refresherToken})
-    res.redirect('/admin/home')
+    // res.redirect('/admin/home')
     // res.status(200).send("Successfully signed in");
   } catch {
+    if(error instanceof Joi.ValidationError){
+      return res.status(400).json({error:{status:400,message:error.message}})
+    }
+    console.error(error)
     res.status(500).send('Something went wrong')
   }
 }
