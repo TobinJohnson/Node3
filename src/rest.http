@@ -1,11 +1,36 @@
-##User Login Page Get
-GET http://localhost:3000/user/login
 
-POST  http://localhost:3000/admin/login
+##User Login Page Get
+GET http://localhost:3002/user/login
+
+
+### POST REQUEST
+
+POST http://localhost:3002/user/login
 Content-Type: application/json
+
+{
+    "email":"david@gmail.com",
+    "password":"passworddef",
+}
+
+### POST REQUEST
+
+POST http://localhost:3002/admin/login
+Content-Type: application/x-www-form-urlencoded
 
 {
     "email":"sarah@gmail.com",
     "password":"passwordghi",
 }
 
+### POST REQUEST
+
+# POST  http://localhost:3000/admin/user/uploadPic
+# Content-Type: image/jpeg
+
+# {
+#     "file":"Tj.jpg"
+# }
+
+#User Login Page Get
+GET http://localhost:3002/admin/login

@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
 const path = require('path')
+const { log } = require('console')
 require('dotenv').config()
 
 const users = JSON.parse(
@@ -9,13 +10,8 @@ const users = JSON.parse(
 
 exports.generateAccessToken = (userId) => {
   try {
-    console.log(jwt.sign + 'jwt generated')
-    // const accesstoken=jwt.sign({userId},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'10m'})
-    console.log(userId + 'haihai')
-    // const accesstoken=jwt.sign({'data':'12312'},"hello",{expiresIn:'10m'})
-    const accessToken = jwt.sign({})
-
-    // return accesstoken
+    const accesstoken=jwt.sign({id:userId},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'10m'})
+    return accesstoken
   } catch (err) {
     console.log('Error signing access token' + err.message)
     return null
@@ -30,8 +26,10 @@ exports.generateRefreshToken = (userId) => {
 exports.verifyRefreshToken = (token) => {
   try {
     const verifiedToken = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET)
-    return verifiedToken
+    console.log(verifiedToken+"verifiedToken")
+    return verifiedToken.userId
   } catch (err) {
+    console.log(err.message)
     return null
   }
 }

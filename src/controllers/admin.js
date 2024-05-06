@@ -3,6 +3,8 @@ const path = require('path')
 const { log, error } = require('console')
 const express=require('express')
 const app=express()
+const jwt=require('jsonwebtoken')
+require('dotenv').config()
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -20,27 +22,29 @@ const users = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../data/userData.json')),
 )
 
+
 exports.loginGet = async (req, res) => {
   res.status(200).send(`You are now Admin Login page , now you can login`)
 }
 
-exports.login = (req, res) => {
+exports.login = async(req, res) => {
   try {
-    console.log(req.body)
+    console.log(req.body+"body")
     const { email, password } = req.body
 
-    // const user = authenticateUser(email, password)
+    const UserDetails = authenticateUser(email, password)
+    console.log(UserDetails);
     // const user = await loginCheckSchema.validateAsync(req.body)
-    // if (!user) return res.status(401).send('Invalid email or password')
+    const user = await loginCheckSchema.validateAsync(UserDetails)
+    console.log(user+"user");
+    if (!user) return res.status(401).send('Invalid email or password')
 
-    // if (user.role !== 'admin') return res.status(403).send('Unauthorized User')
-    // const accessToken = generateAccessToken(user.id)
-    // console.log(accessToken + ' created')
-    //    const refresherToken=generateRefreshToken(user.id)
-    console.log('Hello')
-    // res.json({accessToken,refresherToken})
-    // res.redirect('/admin/home')
-    // res.status(200).send("Successfully signed in");
+    if (UserDetails.role !== 'admin') return res.status(403).send('Unauthorized User')
+       const accessToken = generateAccessToken(UserDetails.id)
+      //  const refresherToken=generateRefreshToken(UserDetails.id)
+      //  res.status(200).json({accessToken,refresherToken})
+             res.status(200).send("hello")
+
   } catch {
     if(error instanceof Joi.ValidationError){
       return res.status(400).json({error:{status:400,message:error.message}})
@@ -51,9 +55,26 @@ exports.login = (req, res) => {
 }
 
 exports.refresherToken = async (req, res) => {
+  const user=UserDetails.id
   const { refresherToken } = req.body
+  console.log(refresherToken+"refresh")
+  if (!refresherToken)
+     return res.status(401).send('Please provide a refresher token')
+  try {
+    jwt.verify(refresherToken,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
+      if(err){
+        return res.status(403).send('Invalid refresher token')
+      }
+      const accesstoken=generateAccessToken(user)
+      res.json({accesstoken})
+    })
+  } catch (error) {
+    return res.status(400).json({message:error.message})
+  }
+
+
   const userId = verifyRefreshToken(refresherToken)
-  if (!userId) return res.status(401).send('Invalid refresher token')
+  if (!userId) return res.status(403).send('Invalid refresher token')
   const accessToken = generateAccessToken(userId)
   res.json({ accessToken })
 }
@@ -166,9 +187,10 @@ exports.userDelete = async (req, res) => {
 
 exports.PhotoUpload = async (req, res) => {
   try {
-    if (!req.file) res.status(400).send('Photo not uploaded')
-    res.status(200).send('You have successfully uploaded')
-  } catch {
-    res.status(500).send('Something went wrong')
+    if (!req.file) return res.status(400).send('Photo not uploaded')
+    res.status(200).send ("Photo uploaded ")
+  } catch(error) {
+    console.log(error);
+    res.status(500)
   }
 }
