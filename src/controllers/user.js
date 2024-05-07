@@ -5,7 +5,7 @@ const {
   generateRefreshToken,
   authenticateUser,
   verifyRefreshToken,
-} = require('../services/CommonService')
+} = require('../helpers/jwt')
 
 const users = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../data/userData.json')),

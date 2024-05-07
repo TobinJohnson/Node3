@@ -4,7 +4,10 @@ const { log, error } = require('console')
 const express=require('express')
 const app=express()
 const jwt=require('jsonwebtoken')
+const bodyParser=require('body-parser')
+const createError=require('http-errors')
 require('dotenv').config()
+app.use(bodyParser.json())
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -12,9 +15,10 @@ const {
   verifyRefreshToken,
   generateUniqueId,
   // generateUniqueId,
-} = require('../services/CommonService')
+} = require('../helpers/jwt')
 const {loginCheckSchema}=require("../helpers/validation-schema")
 const Joi = require('@hapi/joi')
+const createHttpError = require('http-errors')
 app.use(express.json)
 app.use(express.urlencoded({extended:true}))
 
@@ -27,56 +31,68 @@ exports.loginGet = async (req, res) => {
   res.status(200).send(`You are now Admin Login page , now you can login`)
 }
 
-exports.login = async(req, res) => {
+exports.login = async(req, res,next) => {
   try {
-    console.log(req.body+"body")
+    console.log(req.body.email+"body")
     const { email, password } = req.body
+    console.log(email+"email in exports")
+    console.log(password+"password")  
 
     const UserDetails = authenticateUser(email, password)
-    console.log(UserDetails);
-    // const user = await loginCheckSchema.validateAsync(req.body)
-    const user = await loginCheckSchema.validateAsync(UserDetails)
+    if (!UserDetails) 
+      return res.status(401).send('Invalid email or password')
+    console.log(UserDetails.email+"userDetails");
+    const user = await loginCheckSchema.validateAsync(req.body)
+    // const user = await loginCheckSchema.validateAsync(UserDetails)
     console.log(user+"user");
-    if (!user) return res.status(401).send('Invalid email or password')
+    if (!user) 
+      return res.status(401).send('Enter the email & password properly')
 
-    if (UserDetails.role !== 'admin') return res.status(403).send('Unauthorized User')
-       const accessToken = generateAccessToken(UserDetails.id)
-      //  const refresherToken=generateRefreshToken(UserDetails.id)
-      //  res.status(200).json({accessToken,refresherToken})
-             res.status(200).send("hello")
+    if (UserDetails.role !== 'admin') 
+      return res.status(403).send('Unauthorized User')
+       const accessToken = await generateAccessToken(UserDetails.id)
+      console.log(accessToken);
+       const refresherToken= await generateRefreshToken(UserDetails.id)
+       console.log(refresherToken+"refresherToken")
+       res.status(200).send({accessToken,refresherToken})
 
-  } catch {
-    if(error instanceof Joi.ValidationError){
-      return res.status(400).json({error:{status:400,message:error.message}})
+  } catch(error) {
+    if(error.isJoi===true) {
+      return next(createError.BadRequest('Invalid Username/Password'))
     }
-    console.error(error)
-    res.status(500).send('Something went wrong')
+    next(error)
   }
 }
 
-exports.refresherToken = async (req, res) => {
+exports.verifyRefreshToken = async (req, res,next) => {
+  try {
+
   const user=UserDetails.id
   const { refresherToken } = req.body
   console.log(refresherToken+"refresh")
   if (!refresherToken)
-     return res.status(401).send('Please provide a refresher token')
-  try {
-    jwt.verify(refresherToken,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
-      if(err){
-        return res.status(403).send('Invalid refresher token')
-      }
+    //  return res.status(401).send('Please provide a refresher token')
+  throw createError.BadRequest()
+  const userId = await verifyRefreshToken(refresherToken)
+  if (!userId)
+    throw createError.BadRequest()
+    // return res.status(403).send('Invalid refresher token')
+ 
+    
       const accesstoken=generateAccessToken(user)
-      res.json({accesstoken})
-    })
+      const refreshTokenNew=generateRefreshToken(user)
+      // res.json({accesstoken,refreshTokenNew})
+      res.send({accesstoken,refreshTokenNew})
+    
   } catch (error) {
-    return res.status(400).json({message:error.message})
+    next(error)
   }
 
 
-  const userId = verifyRefreshToken(refresherToken)
-  if (!userId) return res.status(403).send('Invalid refresher token')
-  const accessToken = generateAccessToken(userId)
-  res.json({ accessToken })
+  // const userId = verifyRefreshToken(refresherToken)
+  // if (!userId) return res.status(403).send('Invalid refresher token')
+  // const accessToken = generateAccessToken(userId)
+  // res.json({ accessToken })
 }
 
 exports.home = async (req, res) => {
