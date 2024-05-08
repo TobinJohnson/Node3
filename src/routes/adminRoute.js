@@ -1,23 +1,19 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const express = require('express')
-const app=express()
-const paths=require('path')
-
+const app = express()
+const paths = require('path')
 const multer = require('multer')
-
 const router = express.Router()
-
 const adminController = require('../controllers/admin')
-const authMiddle=require('../middleware/authmiddleware')
-const { path } = require('@hapi/joi/lib/errors')
-const { time } = require('console')
+const authMiddle = require('../middleware/authmiddleware')
+
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, './upload')
   },
-  filename:function(req,file,cb){
-    cb(null,Date.now()+paths.extname(file.originalname))
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + paths.extname(file.originalname))
 
   }
 })
@@ -25,7 +21,7 @@ const upload = multer({ storage })
 
 router.get('/login', adminController.loginGet)
 router.post('/login', adminController.login)
-router.get('/home', authMiddle.verifyAccessToken,adminController.home)
+router.get('/home', authMiddle.verifyAccessToken, adminController.home)
 router.get('/home/viewUsers', adminController.viewUsers)
 router.post('/verifyrefreshtoken', adminController.verifyRefreshToken)
 router.post('/user/addUser', adminController.addUser)

@@ -1,13 +1,5 @@
 [
   {
-    "id": "12121216",
-    "name": "RobinJohnsonM",
-    "number": "8888888888",
-    "role": "hr",
-    "email": "david@gmail.com",
-    "password": "robin@12"
-  },
-  {
     "id": "12121217",
     "name": "Sarah",
     "number": "9999999999",
@@ -21,7 +13,7 @@
     "number": "6666666666",
     "role": "admin",
     "email": "alex@gmail.com",
-    "password": "pass1234"
+    "password": "pass12345"
   },
   {
     "id": "12121219",
@@ -86,5 +78,13 @@
     "role": "hai",
     "email": "robin@gmail.com",
     "password": "robin"
+  },
+  {
+    "id": "1715158987947",
+    "name": "John",
+    "number": "123",
+    "role": "john",
+    "email": "john@gmail.com",
+    "password": "john"
   }
 ]

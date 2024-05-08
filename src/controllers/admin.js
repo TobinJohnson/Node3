@@ -1,6 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const { log, error } = require('console')
 const express=require('express')
 const app=express()
 const jwt=require('jsonwebtoken')
@@ -8,6 +7,7 @@ const bodyParser=require('body-parser')
 const createError=require('http-errors')
 require('dotenv').config()
 app.use(bodyParser.json())
+const isJoi=require("@hapi/joi")
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -17,8 +17,6 @@ const {
   // generateUniqueId,
 } = require('../helpers/jwt')
 const {loginCheckSchema}=require("../helpers/validation-schema")
-const Joi = require('@hapi/joi')
-const createHttpError = require('http-errors')
 app.use(express.json)
 app.use(express.urlencoded({extended:true}))
 
@@ -33,27 +31,19 @@ exports.loginGet = async (req, res) => {
 
 exports.login = async(req, res,next) => {
   try {
-    console.log(req.body.email+"body")
     const { email, password } = req.body
-    console.log(email+"email in exports")
-    console.log(password+"password")  
-
+ 
     const UserDetails = authenticateUser(email, password)
     if (!UserDetails) 
       return res.status(401).send('Invalid email or password')
-    console.log(UserDetails.email+"userDetails");
     const user = loginCheckSchema.validateAsync(req.body)
-    // const user = await loginCheckSchema.validateAsync(UserDetails)
-    console.log(user+"user");
     if (!user) 
       return res.status(401).send('Enter the email & password properly')
 
     if (UserDetails.role !== 'admin') 
       return res.status(403).send('Unauthorized User')
        const accessToken = await generateAccessToken(UserDetails.id)
-      console.log(accessToken);
        const refresherToken= await generateRefreshToken(UserDetails.id)
-       console.log(refresherToken+"refresherToken")
        res.status(200).send({accessToken,refresherToken})
 
   } catch(error) {
@@ -68,20 +58,14 @@ exports.verifyRefreshToken = async (req, res,next) => {
   try {
 
   const { refresherToken } = req.body
-  console.log(refresherToken+"refresh")
   if (!refresherToken)
-    //  return res.status(401).send('Please provide a refresher token')
   throw createError.BadRequest("Provide refrsher token")
   const userId = await verifyRefreshToken(refresherToken)
   if (!userId)
-    throw createError.BadRequest("Provide correct refresher token")
-    // return res.status(403).send('Invalid refresher token')
- 
+    throw createError.BadRequest("Provide correct refresher token") 
     
       const accesstoken=await generateAccessToken(userId)
       const refreshTokenNew=await generateRefreshToken(userId)
-      console.log(accesstoken+"access "+refreshTokenNew+"refresh");
-      // res.json({accesstoken,refreshTokenNew})
       res.send({accesstoken,refreshTokenNew})
     
   } catch (error) {
@@ -89,10 +73,7 @@ exports.verifyRefreshToken = async (req, res,next) => {
   }
 
 
-  // const userId = verifyRefreshToken(refresherToken)
-  // if (!userId) return res.status(403).send('Invalid refresher token')
-  // const accessToken = generateAccessToken(userId)
-  // res.json({ accessToken })
+
 }
 
 exports.home = async (req, res) => {

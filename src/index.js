@@ -4,16 +4,7 @@ const app = express()
 const session = require('express-session')
 const adminRoutes = require('./routes/adminRoute')
 const userRoutes = require('./routes/userRoutes')
-// const authRoutes = require('./routes/AuthRoute')
 const createError = require('http-errors')
-// const cors = require('cors')
-
-// app.use(cors())
-// const eslint = require('eslint')
-
-// const cli = new eslint.CLIEngine()
-// const result = cli.executeOnText('')
-
 require('dotenv').config()
 app.use(morgan('dev'))
 app.use(express.json())
@@ -23,11 +14,6 @@ app.use(express.static('public'))
 
 app.use('/admin', adminRoutes)
 app.use('/user', userRoutes)
-// app.use('/auth',authRoutes)
-
-// app.get('*', (req, res) => {
-//   res.status(404).send('404 not found')
-// })
 
 app.use((req, res, next) => {
 next(createError.NotFound("This route doesnt exist"))
@@ -44,5 +30,5 @@ app.use((err, req, res, next) => {
   })
 
 app.listen(process.env.PORT, () => {
-  console.log('Connection to local host')
+  console.log(`Connection to local host' http://localhost:${process.env.PORT}`)
 })
