@@ -42,7 +42,7 @@ exports.login = async(req, res,next) => {
     if (!UserDetails) 
       return res.status(401).send('Invalid email or password')
     console.log(UserDetails.email+"userDetails");
-    const user = await loginCheckSchema.validateAsync(req.body)
+    const user = loginCheckSchema.validateAsync(req.body)
     // const user = await loginCheckSchema.validateAsync(UserDetails)
     console.log(user+"user");
     if (!user) 
@@ -67,20 +67,20 @@ exports.login = async(req, res,next) => {
 exports.verifyRefreshToken = async (req, res,next) => {
   try {
 
-  const user=UserDetails.id
   const { refresherToken } = req.body
   console.log(refresherToken+"refresh")
   if (!refresherToken)
     //  return res.status(401).send('Please provide a refresher token')
-  throw createError.BadRequest()
+  throw createError.BadRequest("Provide refrsher token")
   const userId = await verifyRefreshToken(refresherToken)
   if (!userId)
-    throw createError.BadRequest()
+    throw createError.BadRequest("Provide correct refresher token")
     // return res.status(403).send('Invalid refresher token')
  
     
-      const accesstoken=generateAccessToken(user)
-      const refreshTokenNew=generateRefreshToken(user)
+      const accesstoken=await generateAccessToken(userId)
+      const refreshTokenNew=await generateRefreshToken(userId)
+      console.log(accesstoken+"access "+refreshTokenNew+"refresh");
       // res.json({accesstoken,refreshTokenNew})
       res.send({accesstoken,refreshTokenNew})
     
@@ -144,19 +144,17 @@ exports.editUsers = async (req, res) => {
     const userIndex = users.findIndex((user) => user.id === userId)
     if (userIndex === -1) return res.status(404).send('Invalid user')
     if (req.body.name) users[userIndex].name = req.body.name
-    if (req.body.number) users[userIndex].name = req.body.number
-    if (req.body.role) users[userIndex].name = req.body.role
-    if (req.body.email) users[userIndex].name = req.body.email
-    if (req.body.password) users[userIndex].name = req.body.password
+    if (req.body.number) users[userIndex].number = req.body.number
+    if (req.body.role) users[userIndex].role = req.body.role
+    if (req.body.email) users[userIndex].email = req.body.email
+    if (req.body.password) users[userIndex].password = req.body.password
 
     fs.writeFileSync(
       path.join(__dirname, '../data/userData.json'),
       JSON.stringify(users, null, 2),
     )
 
-    res
-      .status(200)
-      .send('User data successfully updated ' + JSON.stringify(users))
+    res.status(200).send({message:'User data successfully updated ' ,users:users})
   } catch (error) {
     res.status(500).send(error)
   }
@@ -164,10 +162,12 @@ exports.editUsers = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
   const userId = req.params.id
+  console.log(userId);
   try {
     const userIndex = users.findIndex((user) => user.id === userId)
     if (userIndex === -1) return res.status(404).send('Invalid user')
     if (req.body.password) users[userIndex].password = req.body.password
+    console.log(users[userIndex].password+"like");
     fs.writeFileSync(
       path.join(__dirname, '../data/userData.json'),
       JSON.stringify(users, null, 2),

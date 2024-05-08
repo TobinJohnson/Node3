@@ -12,8 +12,6 @@ exports.verifyAccessToken=(req,res,next)=>{
     console.log(authHeader+"authHeader");
     const bearerToken=authHeader.split(' ')
     const token=bearerToken[1]
-
-
     console.log(token+"token");
     if(!token){
         return next(createError.Unauthorized())
@@ -25,8 +23,8 @@ exports.verifyAccessToken=(req,res,next)=>{
             console.log(err+"err");
             return next(createError.Unauthorized())}
             console.log(JSON.stringify(payload));
+            next()
         })
-        console.log(payload);
     } catch (error) {
         res.status(401).json({messsage:"Invalid Token"})
         

@@ -1,19 +1,11 @@
 [
   {
-    "id": "12121215",
-    "name": "Emil",
-    "number": "7777777777",
-    "role": "supervisor",
-    "email": "emil@gmail.com",
-    "password": "pass1234567"
-  },
-  {
     "id": "12121216",
-    "name": "David",
+    "name": "RobinJohnsonM",
     "number": "8888888888",
-    "role": "agent",
+    "role": "hr",
     "email": "david@gmail.com",
-    "password": "passworddef"
+    "password": "robin@12"
   },
   {
     "id": "12121217",
@@ -29,7 +21,7 @@
     "number": "6666666666",
     "role": "admin",
     "email": "alex@gmail.com",
-    "password": "passwordjkl"
+    "password": "pass1234"
   },
   {
     "id": "12121219",
@@ -86,5 +78,13 @@
     "role": "hai",
     "email": "hai@gmail.com",
     "password": "ahi"
+  },
+  {
+    "id": "1715140639757",
+    "name": "RobinJohn",
+    "number": "123",
+    "role": "hai",
+    "email": "robin@gmail.com",
+    "password": "robin"
   }
 ]

@@ -30,7 +30,7 @@ router.get('/home/viewUsers', adminController.viewUsers)
 router.post('/verifyrefreshtoken', adminController.verifyRefreshToken)
 router.post('/user/addUser', adminController.addUser)
 router.put('/user/:id', adminController.editUsers)
-router.put('/user/:id/changePassword', adminController.changePassword)
+router.put('/user/changePassword/:id', adminController.changePassword)
 router.delete('/user/:id', adminController.userDelete)
 router.post(
   '/user/uploadPic',

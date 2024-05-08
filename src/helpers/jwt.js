@@ -22,7 +22,7 @@ const users = JSON.parse(
 // }
 exports.generateAccessToken=(userId)=>{
   return new Promise((resolve,reject)=>{
-    jwt.sign({userId},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'10m'},(err,token)=>{
+    jwt.sign({userId},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'20m'},(err,token)=>{
       if(err){
         reject(createError.InternalServerError())
         return
@@ -69,8 +69,19 @@ exports.authenticateUser = (email, password) => {
   }
  
 }
+exports.ValidUser=(email)=>{
+  try {
+    const user = users.find((userInfo) => userInfo.email === email)
+    console.log(user.password+"auth")
+    return user
+  } catch (error) {
+    console.log(error)
+    return null
+  }
 
+}
 exports.generateUniqueId = () => {
   const unique = Date.now().toString()
   return unique
 }
+
