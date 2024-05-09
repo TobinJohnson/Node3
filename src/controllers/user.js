@@ -26,7 +26,7 @@ exports.loginPost = async (req, res, next) => {
     const UserDetails = authenticateUser(email, password)
     if (!UserDetails)
       return res.status(401).send('Invalid email or password')
-    const user = loginCheckSchema.validateAsync(req.body)
+    const user = await loginCheckSchema.validateAsync(req.body)
     if (!user)
       return res.status(401).send('Enter the email & password properly')
 

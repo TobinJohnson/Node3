@@ -18,18 +18,30 @@ const storage = multer.diskStorage({
   }
 })
 const upload = multer({ storage })
+app.use(authMiddle.authorize)
+/**
+ *@swagger
+ * /api/admin/login:
+ *   get:
+ *     summary: Login
+ *     description:This is api
+ *     responses:
+ *            200:
+ *              description:To test get method
+ * 
+ */
 
 router.get('/login', adminController.loginGet)
 router.post('/login', adminController.login)
 router.get('/home', authMiddle.verifyAccessToken, adminController.home)
-router.get('/home/viewUsers', adminController.viewUsers)
-router.post('/verifyrefreshtoken', adminController.verifyRefreshToken)
-router.post('/user/addUser', adminController.addUser)
+router.get('/home/users', adminController.viewUsers)
+router.post('/verify-refresh-token', adminController.verifyRefreshToken)
+router.post('/user/new-user', adminController.addUser)
 router.put('/user/:id', adminController.editUsers)
-router.put('/user/changePassword/:id', adminController.changePassword)
+router.put('/user/change-password/:id', adminController.changePassword)
 router.delete('/user/:id', adminController.userDelete)
 router.post(
-  '/user/uploadPic',
+  '/user/upload',
   // upload.single('../upload/Tj.jpg'),
   upload.single('file'),
   adminController.PhotoUpload

@@ -24,3 +24,16 @@ exports.verifyAccessToken = (req, res, next) => {
 
     }
 }
+
+exports.authorize = (allowedRole) => {
+    return (req, res, next) => {
+        const user = req.user
+        console.log(user+"user");
+        if (user && user.role === allowedRole)
+            next()
+        else 
+        {
+            return next(createError.Unauthorized())
+        }
+        }
+}
