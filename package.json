@@ -24,6 +24,7 @@
     "express-session": "^1.18.0",
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.0",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "npm": "^10.6.0",
     "path": "^0.12.7",
@@ -40,5 +41,13 @@
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TobinJohnson/Node3.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TobinJohnson/Node3/issues"
+  },
+  "homepage": "https://github.com/TobinJohnson/Node3#readme"
 }
