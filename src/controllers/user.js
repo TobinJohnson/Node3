@@ -1,15 +1,16 @@
 const fs = require('fs')
 const path = require('path')
+// eslint-disable-next-line import/no-extraneous-dependencies
 const createError = require('http-errors')
+const { log } = require('console')
 const {
   generateAccessToken,
   generateRefreshToken,
   authenticateUser,
   verifyRefreshToken,
-  ValidUser
+  ValidUser,
 } = require('../helpers/jwt')
-const { loginCheckSchema } = require("../helpers/validation-schema")
-const { log } = require('console')
+const { loginCheckSchema } = require('../helpers/validation-schema')
 
 const users = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../data/userData.json')),
@@ -24,8 +25,7 @@ exports.loginPost = async (req, res, next) => {
   try {
     const { email, password } = req.body
     const UserDetails = authenticateUser(email, password)
-    if (!UserDetails)
-      return res.status(401).send('Invalid email or password')
+    if (!UserDetails) return res.status(401).send('Invalid email or password')
     const user = await loginCheckSchema.validateAsync(req.body)
     if (!user)
       return res.status(401).send('Enter the email & password properly')
@@ -33,7 +33,6 @@ exports.loginPost = async (req, res, next) => {
     const accessToken = await generateAccessToken(UserDetails.id)
     const refresherToken = await generateRefreshToken(UserDetails.id)
     res.status(200).send({ accessToken, refresherToken })
-
   } catch (error) {
     if (error.isJoi === true) {
       return next(createError.BadRequest('Invalid Username/Password'))
@@ -44,7 +43,6 @@ exports.loginPost = async (req, res, next) => {
 exports.home = async (req, res) => {
   res.status(200).send('Welcome to the Home page')
 }
-
 
 exports.forgotPassword = async (req, res) => {
   const userId = req.params.id

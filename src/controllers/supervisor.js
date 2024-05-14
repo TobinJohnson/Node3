@@ -29,7 +29,7 @@ const users = JSON.parse(
 )
 
 exports.loginGet = async (req, res) => {
-  res.status(200).send(`You are now Admin Login page , now you can login`)
+  res.status(200).send(`You are now Supervisor Login page , now you can login`)
 }
 
 exports.login = async (req, res, next) => {
@@ -42,7 +42,7 @@ exports.login = async (req, res, next) => {
     if (!user)
       return res.status(401).send('Enter the email & password properly')
 
-    if (UserDetails.role !== 'admin')
+    if (UserDetails.role !== 'supervisor')
       return res.status(403).send('Unauthorized User')
     const accessToken = await generateAccessToken(UserDetails.id)
     const refresherToken = await generateRefreshToken(UserDetails.id)
@@ -58,15 +58,26 @@ exports.login = async (req, res, next) => {
 exports.verifyRefreshToken = async (req, res, next) => {
   try {
     const { refresherToken } = req.body
-    if (!refresherToken) throw createError.BadRequest('Provide refresher token')
+    if (!refresherToken) throw createError.BadRequest('Provide refrsher token')
     const userId = await verifyRefreshToken(refresherToken)
-    console.log(refresherToken + 'refresher')
-
     if (!userId) throw createError.BadRequest('Provide correct refresher token')
-    console.log(userId + 'user')
+
     const accesstoken = await generateAccessToken(userId)
     const refreshTokenNew = await generateRefreshToken(userId)
     res.send({ accesstoken, refreshTokenNew })
+  } catch (error) {
+    next(error)
+  }
+}
+exports.selfDetails = async (req, res, next) => {
+  try {
+    const userId = req.headers.authorization.split(' ')[1]
+    const request = jwt.verify(userId, process.env.REFRESH_TOKEN_SECRET)
+    const UserDetails = users.find((user) => user.id === request.userId)
+    if (!UserDetails) throw createError.NotFound('User not found')
+    // const user = await users.findById(req.user.id)
+    res.json(UserDetails)
+    console.log('hai')
   } catch (error) {
     next(error)
   }
@@ -78,14 +89,49 @@ exports.home = async (req, res) => {
 
 exports.viewUsers = async (req, res) => {
   try {
-    // eslint-disable-next-line array-callback-return
-    console.log('Hello')
-    res.status(200).send(users)
+    const regUser = users.filter((user) => user.role !== 'admin')
+    res.status(200).send(regUser)
   } catch (error) {
     res.status(500).send(error)
   }
 }
-
+exports.singleUserDetails = (req, res) => {
+  try {
+    const userId = req.params.id
+    const userIndex = users.findIndex((user) => user.id === userId)
+    if (userIndex === -1) return res.status(404).send('Invalid userssss')
+    res.status(200).send(users[userIndex])
+  } catch (error) {
+    res.status(500).send(error)
+  }
+}
+exports.editDetails = (req, res, next) => {
+  try {
+    const { name, number } = req.body
+    if (!req.headers.authorization)
+      return res.status(401).send('Unauthorized User')
+    const userId = req.headers.authorization.split(' ')[1]
+    const request = jwt.verify(userId, process.env.REFRESH_TOKEN_SECRET)
+    const UserDetails = users.find((user) => user.id === request.userId)
+    if (!UserDetails) throw createError.NotFound('User not found')
+    const userIndex = users.findIndex((user) => user.id === request.userId)
+    if (userIndex === -1) return res.status(404).send('Invalid user')
+    users[userIndex].name = name
+    users[userIndex].number = number
+    fs.writeFileSync(
+      path.join(__dirname, '../data/userData.json'),
+      JSON.stringify(users, null, 2),
+    )
+    res
+      .status(200)
+      .send('User details updated' + JSON.stringify(users[userIndex]))
+  } catch (error) {
+    console.log(error)
+    if (error.isJoi === true) {
+      return next(createError.BadRequest('Invalid Username/Password'))
+    }
+  }
+}
 exports.addUser = (req, res) => {
   try {
     const { name, number, role, email, password } = req.body
@@ -155,6 +201,39 @@ exports.changePassword = async (req, res) => {
       .send('User data successfully updated ' + JSON.stringify(users))
   } catch (error) {
     res.status(500).send(error)
+  }
+}
+exports.passwordChange = async (req, res) => {
+  try {
+    const { password, confirmPassword } = req.body
+    console.log(password + 'password')
+    if (password !== confirmPassword)
+      res.status(400).send('Passwords do not match')
+    if (!req.headers.authorization)
+      return res.status(401).send('Unauthorized User')
+    const userId = req.headers.authorization.split(' ')[1]
+    const request = jwt.verify(userId, process.env.REFRESH_TOKEN_SECRET)
+
+    const UserDetails = await users.find((user) => user.id === request.userId)
+    if (!UserDetails) throw createError.NotFound('User not found')
+    if (password.length < 6) {
+      return res.status(400).json('Password must be at least 6 characters long')
+    }
+
+    const userIndex = users.findIndex((user) => user.id === request.userId)
+    users[userIndex].password = password
+    fs.writeFileSync(
+      path.join(__dirname, '../data/userData.json'),
+      JSON.stringify(users, null, 2),
+    )
+    res
+      .status(200)
+      .send('Password changed successfully' + JSON.stringify(UserDetails))
+  } catch (error) {
+    console.log(error)
+    if (error.isJoi === true) {
+      return createError.BadRequest('Invalid Username/Password')
+    }
   }
 }
 

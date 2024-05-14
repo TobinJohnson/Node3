@@ -1,0 +1,285 @@
+openapi: 3.0.0
+info:
+  title: Admin API Documentation
+  version: 1.0.0
+  description: | 
+    API documentation for user functionalities 
+    ## Overview
+
+    This API provides endpoints for managing users in the UMS (User Management System).
+
+    ## Authentication
+
+    This API uses JWT (JSON Web Token) for authentication. To access protected endpoints, provide your JWT token received as Bearer Token after logging in. The Admin and User Routes are protected; so login with email and password initially using `/api/auth/login` in Auth Routes.
+
+    ## Usage
+
+    Please refer to the API documentation for detailed information on each endpoint. Initially only one admin user is set for usage. More users can be added (registered) using `/api/admin/users` in Admin Routes. (You need to authenticate with a jwt token having admin privilege)
+    ## Flow
+
+    ### Login
+
+    - POST `/auth/login`
+
+    ### Forgot Password
+
+    - POST `/auth/forgot-password`
+    - POST `/auth/otp`
+    - POST `/auth/reset-password`
+
+    ### Register (as agent)
+
+    - POST `/agents`
+
+    ### Admin Routes
+
+    - Login as admin:
+    - Register new user (any role): POST `/admin/users`
+    - Get all registered users: GET `/admin/users`
+    - Get a particular user details: GET `/admin/users/{userId}`
+    - Update any user: PATCH `/admin/users/{userId}`
+    - Delete any user: DELETE `/admin/users/{userId}`
+    - Get admin details: GET `/users/me`
+    - Update admin details: PATCH `/users/me`
+    - Change admin password: PATCH `/users/me/password`
+    - Upload admin profile picture: POST `/users/me/profile-picture` --> PATCH `/users/me`
+
+    ### Supervisor Routes
+
+    - Login as supervisor:
+    - Get all registered users: GET `/supervisor/users`
+    - Get a particular user details: GET `/supervisor/users/{userId}`
+    - Get supervisor details: GET `/users/me`
+    - Update supervisor details: PATCH `/users/me`
+    - Change supervisor password: PATCH `/users/me/password`
+    - Upload supervisor profile picture: POST `/users/me/profile-picture` --> PATCH `/users/me`
+
+    ### Agent Routes
+
+    - Login as agent:
+    - Get agent details: GET `/users/me`
+    - Update agent details: PATCH `/users/me`
+    - Change agent password: PATCH `/users/me/password`
+    - Upload agent profile picture: POST `/users/me/profile-picture` --> PATCH `/users/me`
+
+    ## Access Uploaded Images
+
+    http://localhost:3000/{imagePath}
+
+    ## Search Users (Admin/Supervisor)
+
+    You can search for users with their email, first name, or last name by providing the search query parameter.
+
+    Eg: GET `/admin/users?search=john`
+
+    ## Pagination (Admin/Supervisor)
+
+    You can paginate the results by providing the page and limit query parameters.
+
+    Eg: GET `/admin/users?page=1&limit=10`
+    - limit controls the number of results to be returned per page
+    - page controls which page of results is to be shown
+
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /login:
+    get:
+      summary: Get login page
+      operationId: loginGet
+      responses:
+        '200':
+          description: Login page rendered successfully
+
+    post:
+      summary: Login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User logged in successfully
+        '401':
+          description: Unauthorized
+
+  /home:
+    get:
+      summary: Get home page
+      operationId: home
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Home page rendered successfully
+        '401':
+          description: Unauthorized
+
+  /home/users:
+    get:
+      summary: View users
+      operationId: viewUsers
+      responses:
+        '200':
+          description: Users fetched successfully
+        '401':
+          description: Unauthorized
+
+  /verify-refresh-token:
+    post:
+      summary: Verify refresh token
+      operationId: verifyRefreshToken
+      responses:
+        '200':
+          description: Token verified successfully
+        '401':
+          description: Unauthorized
+
+  /user/new-user:
+    post:
+      summary: Add new user
+      operationId: addUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '200':
+          description: User added successfully
+        '401':
+          description: Unauthorized
+
+  /user/{id}:
+    put:
+      summary: Edit user
+      operationId: editUsers
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUser'
+      responses:
+        '200':
+          description: User edited successfully
+        '401':
+          description: Unauthorized
+
+    delete:
+      summary: Delete user
+      operationId: userDelete
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User deleted successfully
+        '401':
+          description: Unauthorized
+
+  /user/change-password/{id}:
+    put:
+      summary: Change user password
+      operationId: changePassword
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+      responses:
+        '200':
+          description: Password changed successfully
+        '401':
+          description: Unauthorized
+
+  /user/upload:
+    post:
+      summary: Upload user photo
+      operationId: photoUpload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Photo uploaded successfully
+        '401':
+          description: Unauthorized
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    NewUser:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+      required:
+        - name
+        - email
+
+    EditUser:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+      required:
+        - name
+        - email
+
+    ChangePassword:
+      type: object
+      properties:
+        password:
+          type: string
+      required:
+        - password
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
